@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function teacher() {
+      // REPLACE_TEACHER_UID → Authentication → Users → мұғалімнің UID
+      return request.auth != null && request.auth.uid == 'REPLACE_TEACHER_UID';
+    }
+    function validScores(d) {
+      return d.keys().hasOnly(['name','best','total','completed','updatedAt'])
+        && d.keys().hasAll(['name','best','total','completed','updatedAt'])
+        && d.name is string && d.name.size() > 0 && d.name.size() <= 60
+        && d.best is list && d.best.size() == 6
+        && d.best[0] is int && d.best[0] >= 0 && d.best[0] <= 10
+        && d.best[1] is int && d.best[1] >= 0 && d.best[1] <= 5
+        && d.best[2] is int && d.best[2] >= 0 && d.best[2] <= 5
+        && d.best[3] is int && d.best[3] >= 0 && d.best[3] <= 5
+        && d.best[4] is int && d.best[4] >= 0 && d.best[4] <= 5
+        && d.best[5] is int && d.best[5] >= 0 && d.best[5] <= 10
+        && d.total is int && d.total == d.best[0]+d.best[1]+d.best[2]+d.best[3]+d.best[4]+d.best[5]
+        && d.total >= 0 && d.total <= 40
+        && d.completed is int && d.completed >= 0 && d.completed <= 6
+        && d.updatedAt == request.time;
+    }
+    match /students/{studentId} {
+      allow get: if teacher() || (request.auth != null && request.auth.uid == studentId);
+      allow list: if teacher();
+      allow create, update: if request.auth != null
+        && request.auth.uid == studentId
+        && request.auth.token.firebase.sign_in_provider == 'anonymous'
+        && validScores(request.resource.data);
+      allow delete: if false;
+    }
+    match /{path=**} { allow read, write: if false; }
+  }
+}
