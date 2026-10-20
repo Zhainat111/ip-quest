@@ -3,7 +3,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
     function teacher() {
       // REPLACE_TEACHER_UID → Authentication → Users → мұғалімнің UID
-      return request.auth != null && request.auth.uid == 'REPLACE_TEACHER_UID';
+      return request.auth != null && request.auth.uid == 'BjBjtiQdvgPtuAFYngsubIh4XmI2';
     }
     function validScores(d) {
       return d.keys().hasOnly(['name','best','total','completed','updatedAt'])
