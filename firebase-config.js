@@ -1,4 +1,5 @@
-const firebaseConfig = {
+
+window.IPQUEST_FIREBASE_CONFIG = {
   apiKey: "AIzaSyD67C_eRBNHv10VVmVLIum23aojfNo6Vo0",
   authDomain: "ip-quest-747bf.firebaseapp.com",
   projectId: "ip-quest-747bf",
